@@ -5,7 +5,11 @@ from text_generation import Client
 
 def main():
     st.title("LLM Condense 🤖")
-    client = Client(base_url="http://127.0.0.1:8080", timeout=99)
+    
+    client = Client(
+        base_url="http://127.0.0.1:8080", 
+        timeout=2*60
+        )
 
     # Get user input
     user_input = st.text_area("Enter some text here:")
@@ -19,7 +23,6 @@ def main():
         disabled=True, 
         label_visibility="visible"
         )
-
 
     if stream:
         if user_input:

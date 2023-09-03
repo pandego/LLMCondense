@@ -17,7 +17,7 @@ This repo can be used as base for other applications that use LLMs.
 
 You could use `WSL2` on a `Windows` machine, as an alternative to an `Ubuntu` machine.
 
-## Setup your machine (local or remote server) -> STOPED HERE <-
+## Setup your machine (local or remote server)
 ### 1. Serve your LLM using HuggingFace 🤗 - *Text Generation Inference*
 **Text Generation Inference** is a Rust, Python, and gRPC server designed for text generation inference, featuring optimized architectures, tensor parallelism, and production-ready capabilities. This is used by HuggingFace for various services. For more info, visit the [official GitHub repo](https://github.com/huggingface/text-generation-inference).
 
@@ -53,6 +53,18 @@ token=hf_your_token_here
 ```bash
 docker run --gpus all --shm-size 1g -e HUGGING_FACE_HUB_TOKEN=$token -p 8080:80 -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.0.3 --model-id $model
 ```
+
+***Note 1***: If you want to use more then one GPU, you can add `-e CUDA_VISIBLE_DEVICES=0,1` in order to shard the model on 2 processes.
+
+***Note 2***: You can add `-e NCCL_P2P_DISABLE=1` in case you get "`Some NCCL operations have failed or timed out`" error while loading the model - described in [Issue 654](https://github.com/huggingface/text-generation-inference/issues/654) of the *Text Generation Inference* repo.
+
+***Note 3***: You can decrease the `--max-batch-prefill-tokens` in order to decrease memory needs.
+
+- For example:
+```bash
+docker run --gpus all --shm-size 1g -e CUDA_VISIBLE_DEVICES=0,1 -e NCCL_P2P_DISABLE=1 -e HUGGING_FACE_HUB_TOKEN=$token -p 8080:80 -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.0.3 --model-id $model --max-batch-prefill-tokens 2048
+```
+
 
 And that's it, your LLM should be served!
 
