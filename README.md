@@ -54,17 +54,22 @@ token=hf_your_token_here
 docker run --gpus all --shm-size 1g -e HUGGING_FACE_HUB_TOKEN=$token -p 8080:80 -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.0.3 --model-id $model
 ```
 
-***Note 1***: If you want to use more then one GPU, you can add `-e CUDA_VISIBLE_DEVICES=0,1` in order to shard the model on 2 processes.
+***Note 1***: If you want to use more than one GPU, you can add `-e CUDA_VISIBLE_DEVICES=0,1` in order to shard the model on 2 processes.
 
 ***Note 2***: You can add `-e NCCL_P2P_DISABLE=1` in case you get "`Some NCCL operations have failed or timed out`" error while loading the model - described in [Issue 654](https://github.com/huggingface/text-generation-inference/issues/654) of the *Text Generation Inference* repo.
 
 ***Note 3***: You can decrease the `--max-batch-prefill-tokens` in order to decrease memory needs.
 
+***Note 4***: Pay special attention to the arguments `--max-input-length` and `--max-total-tokens`.
+
 - For example:
 ```bash
 docker run --gpus all --shm-size 1g -e CUDA_VISIBLE_DEVICES=0,1 -e NCCL_P2P_DISABLE=1 -e HUGGING_FACE_HUB_TOKEN=$token -p 8080:80 -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.0.3 --model-id $model --max-batch-prefill-tokens 2048
 ```
-
+or
+```bash
+docker run --gpus all --shm-size 1g -e CUDA_VISIBLE_DEVICES=0,1 -e NCCL_P2P_DISABLE=1 -e HUGGING_FACE_HUB_TOKEN=$token -p 8080:80 -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.0.3 --model-id $model --max-input-length 2048 --max-total-tokens 4096
+```
 
 And that's it, your LLM should be served!
 
